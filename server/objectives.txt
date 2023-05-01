@@ -1,0 +1,9 @@
+May First 
+
+* Template running locally - done 
+* My DB Scheme connect - 
+   - have the tables in a Replit. sql - done
+   - Create those tables in the SQL terminal  - done
+   - Connecting those tables to the template - break the frontend - done
+* Mock data passing front the fronEnd to the BackEnd
+* Test my API call 
