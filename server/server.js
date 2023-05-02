@@ -50,7 +50,8 @@ app.get('/api/get-sql-schemes', async (req, res) => {
         // })
         const sqlScheme = dummyData;
         //console.log();
-        res.json(sqlScheme.sqlScheme[0])
+        const newResponse = [{user_prompt: prompt, response: sqlScheme.sqlScheme[0]}]
+        res.json(newResponse)
       
     } catch (error) {
       console.error(error);
