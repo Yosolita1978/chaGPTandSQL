@@ -3,12 +3,19 @@ const cors = require('cors');
 require('dotenv').config();
 const path = require('path');
 const db = require('./db/db-connection.js');
+const { Configuration, OpenAIApi } = require("openai");
+const dummyData = require('./dummydata.js');
 
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
+const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+
+  const openai = new OpenAIApi(configuration);
 
 // creates an endpoint for the route "/""
 app.get('/', (req, res) => {
@@ -25,6 +32,33 @@ app.get('/api/users', async (req, res) => {
         return res.status(400).json({ e });
     }
 });
+
+// create the get request that will do a post request for prompts in the endpoint api/get-sql-schemes
+app.get('/api/get-sql-schemes', async (req, res) => {
+    try {
+        const prompt = "Create a SQL scheme for a blog post web app";
+        // DO-NO DELETE - Commented for not doing API calls directly while testing frontend
+        // const response = await openai.createCompletion({
+        //     model: "text-davinci-003",
+        //     prompt: prompt,
+        //     temperature: 0.3,
+        //     max_tokens: 256,
+        //     n: 1,
+        //     frequency_penalty: 0,
+        //     presence_penalty: 0
+
+        // })
+        const sqlScheme = dummyData;
+        //console.log();
+        res.json(sqlScheme.sqlScheme[0])
+      
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to generate SQL scheme' });
+    }
+  });
+  
+
 
 // // create the POST request
 // app.post('/api/students', async (req, res) => {

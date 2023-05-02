@@ -23,3 +23,8 @@ server/.env
 server/.DS_Store
 DS_Store
 server/objectives.txt
+./server/.env
+/server/.env
+server/.env/
+.env
+server/.env
