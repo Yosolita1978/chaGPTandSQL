@@ -1,6 +1,6 @@
 .App {
   min-height: 100vh;
-  background-color: rgb(238, 232, 232);
+  background-color: rgb(255, 255, 255);
   margin: 5px;
 }
 
@@ -19,7 +19,7 @@ a.navbar-brand {
   margin-left: 5em;
 }
 
-.list-students {
+.list-posts {
   text-align: center;
   margin-top: 25px;
   flex: 1
@@ -70,4 +70,17 @@ button.btn.btn-primary {
 .card-body {
   margin-left: 2em;
   margin-right: 2em;
+  text-align: left;
+}
+
+.card-text{
+  color: black
+}
+
+.card-header{
+  text-align: left;
+}
+
+.blockquote-footer{
+  margin-top: 0 !important;
 }

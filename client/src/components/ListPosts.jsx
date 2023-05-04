@@ -3,7 +3,7 @@ import * as ioicons from 'react-icons/io5'
 //import MyForm from './Form';
 import Post from './Post';
 
-const ListPosts = () => {
+const ListPosts = ({user}) => {
 
     // this is my original state with an array of students 
     // const [students, setStudents] = useState([]);
@@ -64,10 +64,10 @@ const ListPosts = () => {
     return (
         <div className="mybody">
         <div className="list-posts">
-            <h2>Techtonica SQL Blog Post</h2>
+            <h2>Welcome to Techtonica's SQL Archive</h2>
             <ul>
                 {posts.map((post, index) => {
-                    return <li key={index}> <Post post={post} /></li>
+                    return <li key={index}> <Post post={post} user={user} /></li>
                 })}
             </ul>
         </div>

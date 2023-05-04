@@ -26,3 +26,4 @@ DS_Store
 *.njsproj
 *.sln
 *.sw?
+client/.env
