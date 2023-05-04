@@ -5,7 +5,8 @@ const path = require('path');
 const db = require('./db/db-connection.js');
 const { Configuration, OpenAIApi } = require("openai");
 const dummyData = require('./dummydata.js');
-
+const { auth } = require('express-oauth2-jwt-bearer');
+const { AuthenticationClient } = require('auth0');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -16,6 +17,17 @@ const configuration = new Configuration({
   });
 
   const openai = new OpenAIApi(configuration);
+
+  const jwtCheck = auth({
+    audience: process.env.IDENTIFIER,
+    issuerBaseURL: 'https://dev-8ijhw6j7na5tmfoy.us.auth0.com/',
+    tokenSigningAlg: 'RS256'
+  });
+
+  const auth0 = new AuthenticationClient({
+    domain: process.env.AUTH0_DOMAIN,
+    clientId: process.env.AUTH0_CLIENT_ID,
+  });
 
 // creates an endpoint for the route "/""
 app.get('/', (req, res) => {
@@ -36,7 +48,7 @@ app.get('/api/users', async (req, res) => {
 // create the get request that will do a post request for prompts in the endpoint api/get-sql-schemes
 app.get('/api/get-sql-schemes', async (req, res) => {
     try {
-        const prompt = "Create a SQL scheme for a blog post web app";
+        const { rows: posts } = await db.query('SELECT * FROM posts');
         // DO-NO DELETE - Commented for not doing API calls directly while testing frontend
         // const response = await openai.createCompletion({
         //     model: "text-davinci-003",
@@ -48,9 +60,9 @@ app.get('/api/get-sql-schemes', async (req, res) => {
         //     presence_penalty: 0
 
         // })
-        const sqlScheme = dummyData;
-        const newResponse = [{user_prompt: prompt, response: sqlScheme.sqlScheme[0]}]
-        res.json(newResponse)
+        let resultDB = posts
+        console.log(resultDB);
+        res.json(resultDB)
       
     } catch (error) {
       console.error(error);
@@ -58,66 +70,49 @@ app.get('/api/get-sql-schemes', async (req, res) => {
     }
   });
   
-
+const userRequired = async (req, res, next) => {
+    const userProfile = await auth0.getProfile(req.auth.token);
+    //console.log(userProfile);
+    const newUser = {
+        id: userProfile.sub,
+        name: userProfile.name,
+        email: userProfile.email,
+    };
+    //console.log(newUser);
+    let result;
+    try{
+        result = await db.query('SELECT * from users WHERE id=$1', [newUser.id]);
+        if(result.rows.length === 0){
+            result = await db.query(
+                'INSERT INTO users(id, name, email) VALUES($1, $2, $3) RETURNING *',
+                [newUser.id, newUser.name, newUser.email],
+            );
+            //console.log(result.rows[0]);
+        }
+    } catch(e){
+        console.log(e);
+        return res.status(400).json({ e });
+    }
+    req.user = result.rows[0];
+    next()
+}
 
 // // create the POST request
-// app.post('/api/students', async (req, res) => {
-//     try {
-//         const newStudent = {
-//             firstname: req.body.firstname,
-//             lastname: req.body.lastname,
-//             iscurrent: req.body.iscurrent
-//         };
-//         //console.log([newStudent.firstname, newStudent.lastname, newStudent.iscurrent]);
-//         const result = await db.query(
-//             'INSERT INTO students(firstname, lastname, is_current) VALUES($1, $2, $3) RETURNING *',
-//             [newStudent.firstname, newStudent.lastname, newStudent.iscurrent],
-//         );
-//         console.log(result.rows[0]);
-//         res.json(result.rows[0]);
-
-//     } catch (e) {
-//         console.log(e);
-//         return res.status(400).json({ e });
-//     }
-
-// });
-
-// // delete request for students
-// app.delete('/api/students/:studentId', async (req, res) => {
-//     try {
-//         const studentId = req.params.studentId;
-//         await db.query('DELETE FROM students WHERE id=$1', [studentId]);
-//         console.log("From the delete request-url", studentId);
-//         res.status(200).end();
-//     } catch (e) {
-//         console.log(e);
-//         return res.status(400).json({ e });
-
-//     }
-// });
-
-// //A put request - Update a student 
-// app.put('/api/students/:studentId', async (req, res) =>{
-//     //console.log(req.params);
-//     //This will be the id that I want to find in the DB - the student to be updated
-//     const studentId = req.params.studentId
-//     const updatedStudent = { id: req.body.id, firstname: req.body.firstname, lastname: req.body.lastname, iscurrent: req.body.is_current}
-//     console.log("In the server from the url - the student id", studentId);
-//     console.log("In the server, from the react - the student to be edited", updatedStudent);
-//     // UPDATE students SET lastname = "something" WHERE id="16";
-//     const query = `UPDATE students SET firstname=$1, lastname=$2, is_current=$3 WHERE id=${studentId} RETURNING *`;
-//     const values = [updatedStudent.firstname, updatedStudent.lastname, updatedStudent.iscurrent];
-//     try {
-//       const updated = await db.query(query, values);
-//       console.log(updated.rows[0]);
-//       res.send(updated.rows[0]);
-  
-//     }catch(e){
-//       console.log(e);
-//       return res.status(400).json({e})
-//     }
-//   })
+app.post('/api/post-sql-schemes', jwtCheck, userRequired, async (req, res) => {
+    const newPost = {
+        author_id: req.user.id,
+        title: req.body.search,
+        content: dummyData.sqlScheme[0].text,
+        create_at: new Date()
+    }
+    //console.log(newPost);
+    const result = await db.query(
+        'INSERT INTO posts(author_id, title, content, create_at) VALUES($1, $2, $3, $4) RETURNING *',
+        [newPost.author_id, newPost.title, newPost.content, newPost.create_at],
+    );
+    //console.log(result.rows[0]);
+    res.json(result.rows[0]);
+ });
 
 // console.log that your server is up and running
 app.listen(PORT, () => {

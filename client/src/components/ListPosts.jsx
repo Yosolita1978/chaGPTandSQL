@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import * as ioicons from 'react-icons/io5'
-//import MyForm from './Form';
+import MyForm from './Form';
 import Post from './Post';
+import { useAuth0 } from "@auth0/auth0-react";
 
-const ListPosts = ({user}) => {
+const ListPosts = () => {
+
+    const { user, getAccessTokenSilently } = useAuth0();
+
 
     // this is my original state with an array of students 
     // const [students, setStudents] = useState([]);
@@ -14,6 +18,9 @@ const ListPosts = ({user}) => {
 
     const loadPosts = () => {
         // A function to fetch the list of students that will be load anytime that list change
+        // const accessToken = await getAccessTokenSilently();
+        // console.log(accessToken);
+        // {headers: {Authorization: `Bearer ${accessToken}`}}
         fetch("http://localhost:8080/api/get-sql-schemes")
             .then((response) => response.json())
             .then((posts) => {
@@ -22,56 +29,42 @@ const ListPosts = ({user}) => {
             });
     }
 
+    const onSearching = async (newSearch) => {
+        const accessToken = await getAccessTokenSilently();
+        // {headers: {Authorization: `Bearer ${accessToken}`}}
+        fetch("http://localhost:8080/api/post-sql-schemes",
+            {
+                headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+                method: "POST",
+                body: JSON.stringify({ search: newSearch })
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("From the call in the post", data)
+                setPosts((posts) => [...posts, data]);
+            });
+
+    }
+
     useEffect(() => {
         loadPosts();
     }, []);
 
-    // const onSaveStudent = (newStudent) => {
-    //     //console.log(newStudent, "From the parent - List of Students");
-    //     setStudents((students) => [...students, newStudent]);
-    // }
-
-
-    //A function to control the update in the parent (student component)
-    // const updateStudent = (savedStudent) => {
-    //     // console.log("Line 29 savedStudent", savedStudent);
-    //     // This function should update the whole list of students - 
-    //     loadStudents();
-    // }
-
-    //A function to handle the Delete funtionality
-    // const onDelete = (student) => {
-    //     //console.log(student, "delete method")
-    //     return fetch(`http://localhost:8080/api/students/${student.id}`, {
-    //         method: "DELETE"
-    //     }).then((response) => {
-    //         //console.log(response);
-    //         if (response.ok) {
-    //             loadStudents();
-    //         }
-    //     })
-    // }
-
-    //A function to handle the Update functionality
-    // const onUpdate = (toUpdateStudent) => {
-    //     //console.log(toUpdateStudent);
-    //     setEditingStudent(toUpdateStudent);
-
-    // }
-
-
 
     return (
         <div className="mybody">
-        <div className="list-posts">
-            <h2>Welcome to Techtonica's SQL Archive</h2>
-            <ul>
-                {posts.map((post, index) => {
-                    return <li key={index}> <Post post={post} user={user} /></li>
-                })}
-            </ul>
-        </div>
-       
+            <section>
+                {!user ? null : <MyForm user={user} onSearching={onSearching} />}
+
+            </section>
+            <div className="list-posts">
+                <h2>Welcome to Techtonica's SQL Archive</h2>
+                <ul>
+                    {posts.map((post, index) => {
+                        return <li key={index}> <Post post={post} user={user} /></li>
+                    })}
+                </ul>
+            </div>
         </div>
     );
 }
