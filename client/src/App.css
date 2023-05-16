@@ -21,8 +21,9 @@ a.navbar-brand {
 }
 
 .list-posts {
+  align-self: center;
   text-align: center;
-  margin-top: 25px;
+  margin-top: 1em;
   flex: 1
 }
 
@@ -34,22 +35,25 @@ ul {
 section {
   flex-direction: row;
   align-items: center;
+  align-self: center;
   text-align: left;
   margin-top: 3em;
   flex: 1;
+  width: 35em;
 }
+
+
 
 input[type=text] {
   display: inline-block;
-  margin-top: -10px;
   width: 100%;
   font-size: 15px;
   border-radius: 2px;
   border: 3px solid #98d0f1
 }
 
-button.btn.btn-primary {
-  margin-top: 25px;
+#button-form {
+  margin-top: 0.5em;
 }
 
 .myicon {
@@ -59,18 +63,22 @@ button.btn.btn-primary {
   margin-right: 0.9em;
 }
 
-.form-label {
-  margin-bottom: 0 !important;
-  margin-top: 0.5em;
+.form{
+  padding: 2em;
+  border: 3px solid rgb(243, 121, 7);
 }
 
-.form-check {
-  margin-top: 1em;
+label {
+  margin-bottom: 0.3em;
+}
+
+.form-input{
+  padding: 2em;
 }
 
 .card-body {
-  margin-left: 2em;
-  margin-right: 2em;
+  margin-left: 1em;
+  margin-right: 1em;
   text-align: left;
 }
 
@@ -84,4 +92,49 @@ button.btn.btn-primary {
 
 .blockquote-footer{
   margin-top: 0 !important;
+}
+
+.card{
+  width: 25em;
+  align-self: center;
+  margin-top: 2em;
+}
+
+.card-announcement{
+  position: relative;
+  margin: auto;
+  height: 350px;
+  width: 600px;
+  text-align: center;
+  background: linear-gradient(#00556e, #0091b8);
+  color: #fff;
+  padding: 30px;
+}
+
+.announcement {
+  position: relative;
+  border: 3px solid currentColor;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-profile {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  margin: auto;
+  margin-top: 3em;
+  text-align: center;
+}
+
+.card-email {
+  color: grey;
+  font-size: 18px;
+}
+
+.img-profile{
+  width: 50%;
 }

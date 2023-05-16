@@ -41,7 +41,7 @@ const MyForm = ({onSearching}) => {
                     value={search}
                     onChange={handlePromptChange}
                 />
-            <Button type="submit"  variant="outline-success">Ask ChatGPT</Button>
+            <Button id="button-form" type="submit"  variant="outline-success">Ask ChatGPT</Button>
             <div>
                 {!message ? null : <p>{message}</p>}
             </div>

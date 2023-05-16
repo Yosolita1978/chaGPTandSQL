@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import * as ioicons from 'react-icons/io5'
 import MyForm from './Form';
 import Post from './Post';
+import Announcement from './Announcement';
 import { useAuth0 } from "@auth0/auth0-react";
 
 const ListPosts = () => {
@@ -21,10 +21,10 @@ const ListPosts = () => {
         // const accessToken = await getAccessTokenSilently();
         // console.log(accessToken);
         // {headers: {Authorization: `Bearer ${accessToken}`}}
-        fetch("http://localhost:8080/api/get-sql-schemes")
+        fetch("/api/get-sql-schemes")
             .then((response) => response.json())
             .then((posts) => {
-                console.log("From the call in the fetch", posts)
+                //console.log("From the call in the fetch", posts)
                 setPosts(posts);
             });
     }
@@ -32,7 +32,7 @@ const ListPosts = () => {
     const onSearching = async (newSearch) => {
         const accessToken = await getAccessTokenSilently();
         // {headers: {Authorization: `Bearer ${accessToken}`}}
-        fetch("http://localhost:8080/api/post-sql-schemes",
+        fetch("/api/post-sql-schemes",
             {
                 headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
                 method: "POST",
@@ -40,7 +40,7 @@ const ListPosts = () => {
             })
             .then((response) => response.json())
             .then((data) => {
-                console.log("From the call in the post", data)
+                //console.log("From the call in the post", data)
                 setPosts((posts) => [...posts, data]);
             });
 
@@ -54,11 +54,11 @@ const ListPosts = () => {
     return (
         <div className="mybody">
             <section>
-                {!user ? null : <MyForm user={user} onSearching={onSearching} />}
+                {!user ? <Announcement /> : <MyForm user={user} onSearching={onSearching} />}
 
             </section>
             <div className="list-posts">
-                <h2>Welcome to Techtonica's SQL Archive</h2>
+                <h2>Techtonica's SQL Archive</h2>
                 <ul>
                     {posts.map((post, index) => {
                         return <li key={index}> <Post post={post} user={user} /></li>

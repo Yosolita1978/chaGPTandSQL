@@ -27,3 +27,4 @@ DS_Store
 *.sln
 *.sw?
 client/.env
+client/dist

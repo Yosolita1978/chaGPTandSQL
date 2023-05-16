@@ -6,11 +6,12 @@ const Profile = () => {
   const { user } = useAuth0();
 
   return (
-      <div>
-        <img src={user.picture} alt={user.name} />
-        <h2>{user.name}</h2>
-        <p>{user.email}</p>
-        <p>Placeholder for the table post</p>
+    <div>
+      <div className="card-profile">
+        <img className="img-profile" src={user.picture} alt={user.name}/>
+        <h1 className="card-name">{user.name}</h1>
+        <p className="card-email">{user.email}</p>
+      </div>
       </div>
   );
 };

@@ -11,6 +11,9 @@ const { AuthenticationClient } = require('auth0');
 const app = express();
 const PORT = process.env.PORT || 8080;
 app.use(cors());
+//client/dist
+const REACT_BUILD_DIR = path.join(__dirname, "..", "client", "dist");
+app.use(express.static(REACT_BUILD_DIR));
 app.use(express.json());
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -31,14 +34,15 @@ const configuration = new Configuration({
 
 // creates an endpoint for the route "/""
 app.get('/', (req, res) => {
-    res.json({ message: 'Hola, from My template ExpressJS with React-Vite' });
+    //res.json({ message: 'Hola, from My template ExpressJS with React-Vite' });
+    res.sendFile(path.join(REACT_BUILD_DIR, "index.html"));
 });
 
 // create the get request for users in the endpoint '/api/users'
 app.get('/api/users', async (req, res) => {
     try {
         const { rows: users } = await db.query('SELECT * FROM users');
-        console.log(users);
+        //console.log(users);
         res.send(users);
     } catch (e) {
         return res.status(400).json({ e });
@@ -61,7 +65,7 @@ app.get('/api/get-sql-schemes', async (req, res) => {
 
         // })
         let resultDB = posts
-        console.log(resultDB);
+        //console.log(resultDB);
         res.json(resultDB)
       
     } catch (error) {
@@ -113,6 +117,30 @@ app.post('/api/post-sql-schemes', jwtCheck, userRequired, async (req, res) => {
     //console.log(result.rows[0]);
     res.json(result.rows[0]);
  });
+
+
+ // // create the POST request for the FAVORITES
+app.post('/api/favorites', async (req, res) => {
+    const newFavorite = {
+        user_id: req.body.user,
+        post_id: req.body.postid,
+    };
+    let result;
+    try{
+        //console.log("Line 128 server", newFavorite);
+    result = await db.query(
+        'INSERT INTO favorites(user_id, post_id) VALUES($1, $2) RETURNING *',
+        [newFavorite.user_id, newFavorite.post_id],
+    );
+    console.log(result.rows[0]);
+
+    } catch(e){
+        console.log(e)
+
+    }
+    
+ });
+
 
 // console.log that your server is up and running
 app.listen(PORT, () => {
