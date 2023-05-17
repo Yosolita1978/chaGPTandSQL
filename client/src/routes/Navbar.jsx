@@ -9,9 +9,6 @@ function MyNavBar() {
 
   const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
 
-  console.log("From Navbar", user);
-  console.log("From Navbar", isAuthenticated);
-
   return (
     <>
       <Navbar data-testid="navbar" bg="dark" variant="dark" sticky="top">
